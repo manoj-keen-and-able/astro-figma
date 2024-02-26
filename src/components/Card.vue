@@ -12,6 +12,8 @@
             isRequired={true}
             labelClass="text-[0.75rem] font-medium"
             placeholder="Enter full name as per Aadhaar"
+            v-model:value="firstName"
+            :errorMessage="errorArray.firstName"
         />
       </div>
 
@@ -22,12 +24,15 @@
                    placeholder="Enter Mobile Number as per Aadhaar"
                    buttonLabel="Generate OTP"
                    labelClass="text-[0.75rem] font-medium"
+                   v-model:value="mobileNumber"
+                   @button-click="handleOTPMobileClick"
+                   errorMessage=""
         />
       </div>
 
-      <div>
+      <div v-if="optSend.mobile===true">
         <InputForm type='text'
-                   label="An OTP has been sent to your registered mobile numberXXXXXX5676"
+                   :label='maskedMobileNumber'
                    placeholder="Enter Mobile Number as per Aadhaar"
                    buttonLabel="Verify OTP"
                    labelClass="text-[0.75rem] font-medium text-sky-500"
@@ -48,7 +53,7 @@
         />
       </div>
 
-      <div>
+      <div v-if="optSend.email">
         <InputForm type='text'
                    label="An OTP has been sent to your Personal Email ID"
                    placeholder="Enter Mobile Number as per Aadhaar"
@@ -105,7 +110,43 @@
   </div>
 </template>
 <script setup>
+import { useVuelidate } from '@vuelidate/core'
+import { required, email } from '@vuelidate/validators'
 import InputForm from "@/components/InputForm.vue";
+import {watch} from "vue";
+const firstName = defineModel('firstName',{default:""})
+const mobileNumber = defineModel('mobileNumber')
+const optSend = defineModel('otpSend',{
+  default: {mobile:false, email:false}
+})
+let errorArray = {};
+watch(firstName,(newval)=>{
+  if(newval==="" || newval===" "){
+    errorArray.firstName = "Invalid FirstName"
+  }
+})
+let maskedMobileNumber = ''
+const handleOTPMobileClick = ()=>{
+  maskedMobileNumber = mobileNumber.value.split("").map((x,index)=>{
+    if(index <= 5){
+      return 'X'
+    }else{
+      return x
+    }
+  }).join("")
+  maskedMobileNumber = "An OTP has been sent to your registered mobile number " + maskedMobileNumber
+  optSend.value = {
+    ...optSend.value,
+    mobile:true
+  }
+}
+
+const handleOTPEmailClick = ()=>{
+  optSend.value = {
+    ...optSend.value,
+    email:true
+  }
+}
 </script>
 <style lang="scss">
 .card {
