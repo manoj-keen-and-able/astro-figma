@@ -5,6 +5,7 @@ export default {
     "./src/**/*.{js,ts,jsx,tsx,vue}",
   ],
   theme: {
+
     container: {
       center: true,
       padding: {
@@ -19,6 +20,10 @@ export default {
   },
   plugins: [
     require('@tailwindcss/typography'),
+    require("daisyui")
   ],
+  daisyui: {
+    themes: [],
+  },
 }
 
